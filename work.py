@@ -9,5 +9,15 @@ def upload_txt(txt_direction):
             break
 def revisar_lst(lst):
     #TODO hacer los if
-    return True
+    estado = True
+    for i in lst:
+        if i == "":
+            estado = True
+        elif estado:
+            pass
+        else:
+            estado = False
+        if estado == False:
+            break
+    return estado
 upload_txt("a.txt")
