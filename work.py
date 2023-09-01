@@ -1,5 +1,4 @@
 
-lista_corchetes = []
 """
 def upload_txt(txt_direction):
     txt = open(txt_direction)
@@ -30,6 +29,7 @@ def revisar_lst(lst):
 
 """
 defined_names = set()
+lista_corchetes = []
 
 def upload_txt(txt_direction):
     estado = True
@@ -42,6 +42,8 @@ def upload_txt(txt_direction):
             estado = process_tokens(tokens,estado)
             if estado == False:
                 break
+    if sum(lista_corchetes) != 0:
+        estado = False
     return estado
 
 def process_tokens(tokens,estado):
@@ -50,7 +52,9 @@ def process_tokens(tokens,estado):
     elif tokens[0] == "defProc":
         estado = define_procedure(tokens,estado)
     elif tokens[0] == "{":
-        pass
+        lista_corchetes.append(1)
+    elif tokens[0] == "}":
+        lista_corchetes.append(-1)
     else:
         estado = validate_command(tokens,estado)
     return estado
