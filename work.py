@@ -1,5 +1,6 @@
 
 lista_corchetes = []
+"""
 def upload_txt(txt_direction):
     txt = open(txt_direction)
     for i in txt:
@@ -26,4 +27,59 @@ def revisar_lst(lst):
         if not(estado):
             break
     return estado
-upload_txt("a.txt")
+
+"""
+defined_names = set()
+
+def upload_txt(txt_direction):
+    estado = True
+    with open(txt_direction) as txt:
+        for line in txt:
+            line = line.strip()
+            if not line:
+                continue
+            tokens = line.split()
+            estado = process_tokens(tokens,estado)
+            if estado == False:
+                break
+    return estado
+
+def process_tokens(tokens,estado):
+    if tokens[0] == "defVar":
+        estado = define_variable(tokens,estado)
+    elif tokens[0] == "defProc":
+        estado = define_procedure(tokens,estado)
+    elif tokens[0] == "{":
+        pass
+    else:
+        estado = validate_command(tokens,estado)
+    return estado
+
+def define_variable(tokens, estado):
+    if len(tokens) >= 3:
+        variable_name = tokens[1]
+        defined_names.add(variable_name)
+    else:
+        estado = False
+    return estado
+
+def define_procedure(tokens,estado):
+    if len(tokens) >= 3:
+        procedure_name = tokens[1]
+        defined_names.add(procedure_name)
+    else:
+        estado = False
+    return estado
+def validate_command(tokens,estado):
+    for token in tokens:
+        if token in defined_names:
+            continue
+        elif token.startswith('(') and token.endswith(')'):
+            function_name = token[1:-1]
+            if function_name not in defined_names:
+                estado = False
+        else:
+            estado = False  
+    return estado
+
+print(upload_txt("a.txt"))
