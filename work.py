@@ -36,9 +36,11 @@ def upload_txt(txt_direction):
     with open(txt_direction) as txt:
         for line in txt:
             line = line.strip()
+
             if not line:
                 continue
             tokens = line.split()
+            print(tokens)
             estado = process_tokens(tokens,estado)
             if estado == False:
                 break
@@ -50,11 +52,14 @@ def process_tokens(tokens,estado):
     if tokens[0] == "defVar":
         estado = define_variable(tokens,estado)
     elif tokens[0] == "defProc":
+        #corregir define_procedure, esta no define variable como defVar
         estado = define_procedure(tokens,estado)
     elif tokens[0] == "{":
         lista_corchetes.append(1)
     elif tokens[0] == "}":
         lista_corchetes.append(-1)
+    elif "walk" in tokens[0]:
+        estado = walk_function(tokens,estado)
     else:
         estado = validate_command(tokens,estado)
     return estado
@@ -85,5 +90,18 @@ def validate_command(tokens,estado):
         else:
             estado = False  
     return estado
-
+def walk_function(tokens,estado):
+    #aun no esta acabada la funcion
+    val = ""
+    for i in tokens:
+        if i == "walk":
+            continue
+        else:
+            for x in i:
+                val += x
+    correct_str = val[1:len(val)-1]
+    lst_walk_fn = correct_str.split(",")
+    for i in lst_walk_fn:
+        pass
+    return estado
 print(upload_txt("a.txt"))
