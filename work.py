@@ -31,6 +31,7 @@ def revisar_lst(lst):
 defined_names = []
 procedures = []
 lista_corchetes = []
+lista_direcciones = ["north", "south", "west", "east","front", "right", "left","back"]
 
 def upload_txt(txt_direction):
     estado = True
@@ -109,10 +110,22 @@ def walk_function(tokens,estado):
             correct_str+=i
             
     lst_walk_fn = correct_str.split(",")
+    result_Try = 0
     for i in lst_walk_fn:
-        if i in defined_names:
-            pass
+        try:
+            float(i)
+            result_Try = True 
+        except:
+            result_Try = False
+        if not(i in defined_names):
+            estado = True
+        elif i in lista_direcciones:
+            estado = False
+        elif not(result_Try):
+            estado = False
+        
         else:
             estado = False
+            
     return estado
 print(upload_txt("a.txt"))
