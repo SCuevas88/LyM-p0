@@ -28,7 +28,8 @@ def revisar_lst(lst):
     return estado
 
 """
-defined_names = set()
+defined_names = []
+procedures = []
 lista_corchetes = []
 
 def upload_txt(txt_direction):
@@ -67,7 +68,7 @@ def process_tokens(tokens,estado):
 def define_variable(tokens, estado):
     if len(tokens) >= 3:
         variable_name = tokens[1]
-        defined_names.add(variable_name)
+        defined_names.append(variable_name)
     else:
         estado = False
     return estado
@@ -75,7 +76,7 @@ def define_variable(tokens, estado):
 def define_procedure(tokens,estado):
     if len(tokens) >= 3:
         procedure_name = tokens[1]
-        defined_names.add(procedure_name)
+        procedures.append(procedure_name)
     else:
         estado = False
     return estado
@@ -96,12 +97,22 @@ def walk_function(tokens,estado):
     for i in tokens:
         if i == "walk":
             continue
+        elif "walk" in i:
+            i = i.split("(")
+            val += i[1]
         else:
-            for x in i:
-                val += x
-    correct_str = val[1:len(val)-1]
+            val += i
+
+    correct_str =""
+    for i in val:
+        if i != "(" or i != ")":
+            correct_str+=i
+            
     lst_walk_fn = correct_str.split(",")
     for i in lst_walk_fn:
-        pass
+        if i in defined_names:
+            pass
+        else:
+            estado = False
     return estado
 print(upload_txt("a.txt"))
