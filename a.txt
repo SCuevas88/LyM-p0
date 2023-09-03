@@ -1,6 +1,10 @@
-walk(ssd , s )
-defVar nom 0
+defVar nom 0;
 defVar x 0
 defVar y 0
 defVar one 0
 defVar n 0
+drop ( x )
+walk ( nom , north )
+get ( x )
+grab ( y )
+letGo(one)

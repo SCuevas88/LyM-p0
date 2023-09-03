@@ -41,8 +41,11 @@ def upload_txt(txt_direction):
 
             if not line:
                 continue
+            if ";" in line:
+                line = line[0:len(line)-1]
             tokens = line.split()
             print(tokens)
+            print(estado)
             estado = process_tokens(tokens,estado)
             if estado == False:
                 break
@@ -62,6 +65,15 @@ def process_tokens(tokens,estado):
         lista_corchetes.append(-1)
     elif "walk" in tokens[0]:
         estado = walk_function(tokens,estado)
+    elif "drop"in tokens[0]:
+        print(defined_names)
+        estado = one_pos_func(tokens,estado,"drop",defined_names)
+    elif "get" in tokens[0]:
+        estado = one_pos_func(tokens,estado,"get",defined_names)
+    elif "grab" in tokens[0]:
+        estado = one_pos_func(tokens,estado,"grab",defined_names)
+    elif tokens[0] in procedures:
+        pass
     else:
         estado = validate_command(tokens,estado)
     return estado
@@ -103,12 +115,12 @@ def walk_function(tokens,estado):
             val += i[1]
         else:
             val += i
-
     correct_str =""
     for i in val:
-        if i != "(" or i != ")":
+        if i != "(" and i != ")":
+
             correct_str+=i
-            
+
     lst_walk_fn = correct_str.split(",")
     result_Try = 0
     for i in lst_walk_fn:
@@ -117,15 +129,50 @@ def walk_function(tokens,estado):
             result_Try = True 
         except:
             result_Try = False
-        if not(i in defined_names):
+
+        if i in defined_names:
             estado = True
         elif i in lista_direcciones:
-            estado = False
-        elif not(result_Try):
-            estado = False
+            estado = True
+        elif result_Try:
+            estado = True
         
         else:
             estado = False
             
     return estado
+def one_pos_func(tokens,estado,fn,type):
+    if tokens[0] != fn:
+        tokens[0].split("(")
+    val = ""
+    for i in tokens:
+        if i == fn:
+            print("entra")
+            continue
+        elif i == "(" or i == ")":
+            continue
+        elif fn in i:
+            i = i.split("(")
+            if len(i[1])>1:
+                val = i[1][0]
+            else:
+                val = i[1]
+            if val in type:
+                estado = True
+        elif i in type:
+            estado = True
+        elif len(i)>1:
+            val_2 = ""
+            for j in i:
+                if j != "(" and j != ")":
+                    val_2 +=j
+
+            if val_2 in type:
+                estado = True
+            else:
+                estado = False               
+            
+        else:
+            estado = False
+    return estado     
 print(upload_txt("a.txt"))
