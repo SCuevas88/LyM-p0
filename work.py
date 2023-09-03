@@ -206,10 +206,12 @@ def cond_detection(tokens,estado):
     el = tokens[i]
     while el != "{":
         if "can" in el:
-            estado = True
+            can_detection(tokens,)
         else:
             estado = False
         i +=1
         el = tokens[i]
     return estado
+def can_detection():
+    pass
 print(upload_txt("a.txt"))
