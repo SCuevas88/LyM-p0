@@ -72,8 +72,19 @@ def process_tokens(tokens,estado):
         estado = one_pos_func(tokens,estado,"get",defined_names)
     elif "grab" in tokens[0]:
         estado = one_pos_func(tokens,estado,"grab",defined_names)
+    elif "letGo" in tokens[0]:
+        estado = one_pos_func(tokens,estado,"letGo",defined_names)
+    elif tokens[0] == "nop()" or tokens[0] == "nop ()":
+        estado = True
     elif tokens[0] in procedures:
+        #falta
         pass
+    elif "if" == tokens[0]:
+        estado = funct_if(tokens,estado)
+    elif "while" == tokens[0]:
+        estado = funct_while(tokens,estado)
+    elif "repeat" == tokens[0]:
+        estado = funct_repeat(tokens,estado)
     else:
         estado = validate_command(tokens,estado)
     return estado
@@ -175,4 +186,30 @@ def one_pos_func(tokens,estado,fn,type):
         else:
             estado = False
     return estado     
+def funct_if(tokens,estado):
+    #TODO hacerla toda
+    for i in tokens:
+        if i == "if":
+            continue
+        else:
+            estado = False
+    return estado
+def funct_while(tokens,estado):
+    #TODO hacerla toda
+    return estado
+def funct_repeat(tokens,estado):
+    #TODO hacerla toda
+    return estado
+def cond_detection(tokens,estado):
+    #completar function
+    i = 0
+    el = tokens[i]
+    while el != "{":
+        if "can" in el:
+            estado = True
+        else:
+            estado = False
+        i +=1
+        el = tokens[i]
+    return estado
 print(upload_txt("a.txt"))
