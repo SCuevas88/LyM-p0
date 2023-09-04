@@ -32,7 +32,8 @@ defined_names = []
 procedures = []
 lista_corchetes = []
 lista_direcciones = ["north", "south", "west", "east","front", "right", "left","back"]
-
+lst_turn = ["left","right","around"]
+lst_turnto = ["north", "south", "west", "east"]
 def upload_txt(txt_direction):
     estado = True
     with open(txt_direction) as txt:
@@ -64,7 +65,9 @@ def process_tokens(tokens,estado):
     elif tokens[0] == "}":
         lista_corchetes.append(-1)
     elif "walk" in tokens[0]:
-        estado = walk_function(tokens,estado)
+        estado = two_pos_function(tokens,estado,"walk")
+    elif "leap" in tokens[0]:
+        estado = two_pos_function(tokens,estado,"leap")
     elif "drop"in tokens[0]:
         print(defined_names)
         estado = one_pos_func(tokens,estado,"drop",defined_names)
@@ -74,6 +77,10 @@ def process_tokens(tokens,estado):
         estado = one_pos_func(tokens,estado,"grab",defined_names)
     elif "letGo" in tokens[0]:
         estado = one_pos_func(tokens,estado,"letGo",defined_names)
+    elif "turn" in tokens[0]:
+        estado = one_pos_func(tokens,estado,"turn",lst_turn)
+    elif "turnto" in tokens[0]:
+        estado = one_pos_func(tokens,estado,"turnto",lst_turnto)
     elif tokens[0] == "nop()" or tokens[0] == "nop ()":
         estado = True
     elif tokens[0] in procedures:
@@ -101,6 +108,23 @@ def define_procedure(tokens,estado):
     if len(tokens) >= 3:
         procedure_name = tokens[1]
         procedures.append(procedure_name)
+        val = ""
+        for i in range(2,len(tokens)):
+            el = tokens[i]
+            if len(el) < 1:
+                if el != "(" and el != ")":
+                    val += el
+            else:
+                for x in el:
+                    if x != "(" and x != ")" and x != " ":
+                        val +=x
+        if "{" not in val and "}" not in val:
+            estado = True
+            lst_val = val.split(",")
+            for i in lst_val:
+                defined_names.append(i)       
+        else:
+            estado = False     
     else:
         estado = False
     return estado
@@ -115,13 +139,13 @@ def validate_command(tokens,estado):
         else:
             estado = False  
     return estado
-def walk_function(tokens,estado):
+def two_pos_function(tokens,estado,fn):
     #aun no esta acabada la funcion
     val = ""
     for i in tokens:
-        if i == "walk":
+        if i == fn:
             continue
-        elif "walk" in i:
+        elif fn in i:
             i = i.split("(")
             val += i[1]
         else:
@@ -133,25 +157,18 @@ def walk_function(tokens,estado):
             correct_str+=i
 
     lst_walk_fn = correct_str.split(",")
-    result_Try = 0
-    for i in lst_walk_fn:
-        try:
-            float(i)
-            result_Try = True 
-        except:
-            result_Try = False
-
-        if i in defined_names:
+    try:
+        if lst_walk_fn[0] in defined_names:
             estado = True
-        elif i in lista_direcciones:
-            estado = True
-        elif result_Try:
-            estado = True
-        
         else:
             estado = False
-            
-    return estado
+            return estado
+        if lst_walk_fn[1] in lista_direcciones:
+             return True
+        else: 
+            return False
+    except:
+        return True
 def one_pos_func(tokens,estado,fn,type):
     if tokens[0] != fn:
         tokens[0].split("(")
@@ -164,12 +181,15 @@ def one_pos_func(tokens,estado,fn,type):
             continue
         elif fn in i:
             i = i.split("(")
-            if len(i[1])>1:
-                val = i[1][0]
-            else:
-                val = i[1]
+            for j in i[1]:
+                if j != "(" and j != ")":
+                    val+=j
+                elif j == "," or j == ";":
+                    return False
             if val in type:
                 estado = True
+            else: 
+                estado = False
         elif i in type:
             estado = True
         elif len(i)>1:
