@@ -1,4 +1,4 @@
-
+import re
 """
 def upload_txt(txt_direction):
     txt = open(txt_direction)
