@@ -1,4 +1,4 @@
-import re
+
 """
 def upload_txt(txt_direction):
     txt = open(txt_direction)
@@ -34,28 +34,29 @@ lista_corchetes = []
 lista_direcciones = ["north", "south", "west", "east","front", "right", "left","back"]
 lst_turn = ["left","right","around"]
 lst_turnto = ["north", "south", "west", "east"]
+proc_in_process = False
+lst_val_created = []
 def upload_txt(txt_direction):
     estado = True
     with open(txt_direction) as txt:
         for line in txt:
             line = line.strip()
-
+            print(line)
             if not line:
                 continue
             if ";" in line:
                 line = line[0:len(line)-1]
             tokens = line.split()
-            print(tokens)
-            print(estado)
-            estado = process_tokens(tokens,estado)
-            print("volvio")
+
+            estado = process_tokens(tokens,estado,proc_in_process)
+
             if estado == False:
                 break
     if sum(lista_corchetes) != 0:
         estado = False
     return estado
 
-def process_tokens(tokens,estado):
+def process_tokens(tokens,estado,proc):
     if tokens[0] == "defVar":
         estado = define_variable(tokens,estado)
     elif tokens[0] == "defProc":
@@ -65,12 +66,18 @@ def process_tokens(tokens,estado):
         lista_corchetes.append(1)
     elif tokens[0] == "}":
         lista_corchetes.append(-1)
+        print(proc)
+        if proc:
+            proc = False
+            for j in lst_val_created:
+                defined_names.remove(j)
+                lst_val_created = []
     elif "walk" in tokens[0]:
         estado = two_pos_function(tokens,estado,"walk")
     elif "leap" in tokens[0]:
         estado = two_pos_function(tokens,estado,"leap")
     elif "drop"in tokens[0]:
-        print(defined_names)
+
         estado = one_pos_func(tokens,estado,"drop",defined_names)
     elif "get" in tokens[0]:
         estado = one_pos_func(tokens,estado,"get",defined_names)
@@ -85,7 +92,7 @@ def process_tokens(tokens,estado):
     elif tokens[0] == "nop()" or tokens[0] == "nop ()":
         estado = True
     elif "if" in tokens[0]:
-        print("entra1")
+
         estado = funct_if(tokens,estado)
     elif tokens[0] in procedures:
         #falta
@@ -112,6 +119,7 @@ def define_procedure(tokens,estado):
     if len(tokens) >= 3:
         procedure_name = tokens[1]
         procedures.append(procedure_name)
+        proc_in_process = True
         val = ""
         for i in range(2,len(tokens)):
             el = tokens[i]
@@ -126,7 +134,8 @@ def define_procedure(tokens,estado):
             estado = True
             lst_val = val.split(",")
             for i in lst_val:
-                defined_names.append(i)       
+                defined_names.append(i)   
+                lst_val_created.append(i)    
         else:
             estado = False     
     else:
@@ -146,6 +155,7 @@ def validate_command(tokens,estado):
 def two_pos_function(tokens,estado,fn):
     #aun no esta acabada la funcion
     val = ""
+
     for i in tokens:
         if i == fn:
             continue
@@ -162,16 +172,20 @@ def two_pos_function(tokens,estado,fn):
 
     lst_walk_fn = correct_str.split(",")
     try:
+
         if lst_walk_fn[0] in defined_names:
             estado = True
         else:
+
             estado = False
             return estado
         if lst_walk_fn[1] in lista_direcciones:
              return True
         else: 
+
             return False
     except:
+
         return True
 def one_pos_func(tokens,estado,fn,type):
     if tokens[0] != fn:
@@ -183,7 +197,6 @@ def one_pos_func(tokens,estado,fn,type):
             return False
         if fn in i:
             i =i.replace(fn,"")
-            print(i)
             for j in i:
                 if j not in word:
                     val+=j
@@ -209,8 +222,7 @@ def funct_if(tokens,estado):
     #TODO hacerla toda
     for i in tokens:
         if i == "if":
-            print("entra")
-            can_detection(tokens)
+            return cond_detection(tokens,estado)
 
         else:
             return False
@@ -222,19 +234,19 @@ def funct_repeat(tokens,estado):
     #TODO hacerla toda
     return estado
 def cond_detection(tokens,estado):
+
     #completar function
     i = 0
     el = tokens[i]
     while el != "{":
         if "can" in el:
-            can_detection(tokens,estado)
+            return can_detection(tokens)
         else:
             estado = False
         i +=1
         el = tokens[i]
     return estado
 def can_detection(lst):
-    print("entra can")
     can_detect = False
     for i in range(1,len(lst)):
         if lst[i] == "{" or i == "}":
@@ -245,38 +257,37 @@ def can_detection(lst):
         elif "can" in lst[i]:
             can_detect = True
             new_lst = lst[i].split("(")
-            print(new_lst)
-            print("can in")
-            val = new_lst[1]
+
+            lst = new_lst[1:len(new_lst)]
             #toca ver como selecciono lo que quiero   
-            return verify_simple_command(val) 
+            return verify_simple_command(lst) 
         else:
             return False
+        #isis-1104 isis-1107 isis-1226 mate-1105
     if can_detect == False:
         return False
     else:
         return True
 def verify_simple_command(command):
     estado = None
-    print("verify")
-    command = command.split()
     if "walk" in command:
-        estado = two_pos_function(command,estado,"walk")
+
+        estado = two_pos_function(command,True,"walk")
     elif "leap" in command:
-        estado = two_pos_function(command,estado,"leap")
+        estado = two_pos_function(command,True,"leap")
     elif "drop"in command:
-        print(defined_names)
-        estado = one_pos_func(command,estado,"drop",defined_names)
+
+        estado = one_pos_func(command,True,"drop",defined_names)
     elif "get" in command:
-        estado = one_pos_func(command,estado,"get",defined_names)
+        estado = one_pos_func(command,True,"get",defined_names)
     elif "grab" in command:
-        estado = one_pos_func(command,estado,"grab",defined_names)
+        estado = one_pos_func(command,"grab",defined_names)
     elif "letGo" in command:
-        estado = one_pos_func(command,estado,"letGo",defined_names)
+        estado = one_pos_func(command,"letGo",defined_names)
     elif "turn" in command:
-        estado = one_pos_func(command,estado,"turn",lst_turn)
+        estado = one_pos_func(command,"turn",lst_turn)
     elif "turnto" in command:
-        estado = one_pos_func(command,estado,"turnto",lst_turnto)
+        estado = one_pos_func(command,"turnto",lst_turnto)
     elif command == "nop()":
         estado = True
     else:
