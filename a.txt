@@ -24,3 +24,4 @@ drop( c ) ;
 letGo ( b ) ;
 walk( n )
 }
+if can(walk(n))
