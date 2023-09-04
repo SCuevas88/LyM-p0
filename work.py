@@ -48,6 +48,7 @@ def upload_txt(txt_direction):
             print(tokens)
             print(estado)
             estado = process_tokens(tokens,estado)
+            print("volvio")
             if estado == False:
                 break
     if sum(lista_corchetes) != 0:
@@ -176,38 +177,33 @@ def one_pos_func(tokens,estado,fn,type):
     if tokens[0] != fn:
         tokens[0].split("(")
     val = ""
+    word = "()"
     for i in tokens:
-        if i == fn:
-            print("entra")
-            continue
-        elif i == "(" or i == ")":
-            continue
-        elif fn in i:
-            i = i.split("(")
-            for j in i[1]:
-                if j != "(" and j != ")":
+        if fn == i:
+            return False
+        if fn in i:
+            i =i.replace(fn,"")
+            print(i)
+            for j in i:
+                if j not in word:
                     val+=j
                 elif j == "," or j == ";":
                     return False
-            if val in type:
-                estado = True
-            else: 
-                estado = False
-        elif i in type:
-            estado = True
-        elif len(i)>1:
-            val_2 = ""
+                else:
+                    continue
+        elif i not in word:
             for j in i:
-                if j != "(" and j != ")":
-                    val_2 +=j
-
-            if val_2 in type:
-                estado = True
-            else:
-                estado = False               
-            
+                if j not in word:
+                    val +=j                        
+        elif i in word:
+            continue
         else:
             estado = False
+    val =val
+    if val in type:
+                return True
+    else: 
+                estado = False
     return estado     
 def funct_if(tokens,estado):
     #TODO hacerla toda
@@ -238,6 +234,7 @@ def cond_detection(tokens,estado):
         el = tokens[i]
     return estado
 def can_detection(lst):
+    print("entra can")
     can_detect = False
     for i in range(1,len(lst)):
         if lst[i] == "{" or i == "}":
@@ -246,9 +243,10 @@ def can_detection(lst):
             can_detect = True
             continue
         elif "can" in lst[i]:
-
+            can_detect = True
             new_lst = lst[i].split("(")
             print(new_lst)
+            print("can in")
             val = new_lst[1]
             #toca ver como selecciono lo que quiero   
             return verify_simple_command(val) 
@@ -259,7 +257,8 @@ def can_detection(lst):
     else:
         return True
 def verify_simple_command(command):
-    print("entra3")
+    estado = None
+    print("verify")
     command = command.split()
     if "walk" in command:
         estado = two_pos_function(command,estado,"walk")
