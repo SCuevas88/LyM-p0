@@ -1,27 +1,22 @@
-defVar nom 0
-defVar x 0
-defVar y 0
-defVar one 0
-defVar n 0
-
-walk(nom , north )
-get(2)
-grab(x)
-letGo(one)
-defProc putCB (c,b)
+ defVar nom 0
+ defVar x 0
+ defVar y 0
+ defVar one 0
+defProc putCB (c, b)
 {
-    walk(c,left)
-    turn(left)
+drop(c);
+letGo(3);
+walk(2)
 }
-
-defVar nom 0
-defVar x 0
-defVar y 0
-defVar one 0
-walk(x, north)
-defProc putCB (c , b )
+ defProc goNorth ()
+ {
+ while can (walk (1,north)) { walk (1,north)}
+}
+defProc goWest ()
 {
-drop( c ) ;
-letGo( b) ;
+if can(walk (1,west)) {walk(x)} else{walk(a,)}
 }
-if can(walk( x ,north))
+{
+jump (3,3);
+putCB (2,1)
+}
