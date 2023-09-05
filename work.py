@@ -1,33 +1,4 @@
 
-"""
-def upload_txt(txt_direction):
-    txt = open(txt_direction)
-    for i in txt:
-        lst = i.replace("\n","").split(" ")
-        print(lst)
-        if not(revisar_lst(lst)):
-            break
-def revisar_lst(lst):
-    #TODO hacer los if
-    estado = ""
-    for i in lst:
-        if i == "":
-            estado = True
-        elif i == "defVar":
-            estado = True                
-        elif "walk" in i:
-            #falta revisar walk function
-            lst_i = i.split("(").split(")")
-            values = lst_i[1]
-        elif estado:
-            pass
-        else:
-            estado = False
-        if not(estado):
-            break
-    return estado
-
-"""
 defined_names = []
 procedures = []
 lista_corchetes = []
@@ -60,8 +31,6 @@ def process_tokens(tokens,estado,proc):
     if tokens[0] == "defVar":
         estado = define_variable(tokens,estado)
     elif tokens[0] == "defProc":
-        #corregir define_procedure, esta no define variable como defVar
-        print(tokens)
         if "(" in tokens or ")" in tokens:
             return False
         estado = define_procedure(tokens,estado)
@@ -74,6 +43,8 @@ def process_tokens(tokens,estado,proc):
             for j in lst_val_created:
                 defined_names.remove(j)
                 lst_val_created = []
+    elif "name" == tokens[0]:
+        return name_fun()
     elif "walk" in tokens[0]:
         estado = two_pos_function(tokens,estado,"walk")
     elif "leap" in tokens[0]:
@@ -159,7 +130,7 @@ def validate_command(tokens,estado):
 def two_pos_function(tokens,estado,fn):
     #aun no esta acabada la funcion
     val = ""
-    print(tokens)
+
     for i in tokens:
         if i == fn:
             continue
@@ -168,16 +139,15 @@ def two_pos_function(tokens,estado,fn):
             val += i[1]
         else:
             val += i
-    print(val)
+
     correct_str =""
     for i in val:
         if i != "(" and i != ")":
 
             correct_str+=i
-    print("ccccccccccccccccc")
-    print(correct_str)
+
     lst_walk_fn = correct_str.split(",")
-    print(lst_walk_fn)
+
     es_numero = None
     try:
         int(lst_walk_fn[0])
@@ -365,7 +335,6 @@ def jump_function(tokens,estado):
                 return False
     return True
 def block_inside(tokens,estado,c):
-    print(c)
     bracket_o = 0
     block_inside = ""
     if c== "if":
@@ -388,10 +357,23 @@ def block_inside(tokens,estado,c):
         return False
     if bracket_o >0:
         return False
-    print("--------------------------------------------------------")
-    print(bracket_o)
+
     return process_tokens(lst,estado,proc_in_process)
     
+def name_fun(tokens,estado,poc_i_p):
+    if len(tokens) != 3:
+        return False 
+    val = tokens[0]
+
+    try:
+        int(tokens[2])
+        defined_names.append(val)
+        return True
+    except:
+        if tokens[2] in defined_names:
+            return True
+        return False
+
     
                 
             
