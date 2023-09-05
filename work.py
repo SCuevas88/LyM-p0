@@ -66,7 +66,6 @@ def process_tokens(tokens,estado,proc):
         lista_corchetes.append(1)
     elif tokens[0] == "}":
         lista_corchetes.append(-1)
-        print(proc)
         if proc:
             proc = False
             for j in lst_val_created:
@@ -155,7 +154,7 @@ def validate_command(tokens,estado):
 def two_pos_function(tokens,estado,fn):
     #aun no esta acabada la funcion
     val = ""
-
+    print(tokens)
     for i in tokens:
         if i == fn:
             continue
@@ -164,13 +163,16 @@ def two_pos_function(tokens,estado,fn):
             val += i[1]
         else:
             val += i
+    print(val)
     correct_str =""
     for i in val:
         if i != "(" and i != ")":
 
             correct_str+=i
-
+    print("ccccccccccccccccc")
+    print(correct_str)
     lst_walk_fn = correct_str.split(",")
+    print(lst_walk_fn)
     try:
 
         if lst_walk_fn[0] in defined_names:
@@ -212,9 +214,18 @@ def one_pos_func(tokens,estado,fn,type):
             continue
         else:
             estado = False
-    val =val
+    number = 0
+    try:
+        int(val)
+        number = True
+    except:
+        number = False
+    if "turn" in fn:
+        number = False
     if val in type:
                 return True
+    elif number:
+        return True
     else: 
                 estado = False
     return estado     
@@ -256,14 +267,16 @@ def can_detection(lst):
             continue
         elif "can" in lst[i]:
             can_detect = True
-            new_lst = lst[i].split("(")
 
-            lst = new_lst[1:len(new_lst)]
+            new_lst = lst.split("(")
+            print("la lstttttttttt")
+            print(new_lst)
+            lst = new_lst[1:len(new_lst)+1]
             #toca ver como selecciono lo que quiero   
             return verify_simple_command(lst) 
         else:
             return False
-        #isis-1104 isis-1107 isis-1226 mate-1105
+
     if can_detect == False:
         return False
     else:

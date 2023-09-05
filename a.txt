@@ -5,7 +5,7 @@ defVar one 0
 defVar n 0
 
 walk(nom , north )
-get(x)
+get(2)
 grab(x)
 letGo(one)
 defProc putCB (c,b)
@@ -18,10 +18,10 @@ defVar nom 0
 defVar x 0
 defVar y 0
 defVar one 0
+walk(x, north)
 defProc putCB (c , b )
 {
 drop( c ) ;
 letGo( b) ;
-walk(x)
 }
-if can(walk(no))
+if can(walk( x ,north))
