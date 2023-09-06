@@ -256,15 +256,28 @@ def cond_detection(tokens,estado):
     #completar function
     i = 0
     el = tokens[i]
+    est_not = False
+    print("QUE RAYOS PASA")
+    print(tokens)
 
     while el != "{":
-        if "can" in el:            
+        print(el)
+        print()
+        if "if" == el:
+            estado = True
+        elif "not:" in el:
+            estado = True
+        elif "can" in el:            
             return can_detection(tokens)
+        elif "facing" in el:
+            return facing_detection(tokens)
+            
         else:
-            estado = False
+            return False
         i +=1
         el = tokens[i]
-    return estado
+    if est_not:
+        return not(estado)
 def can_detection(lst):
     can_detect = False
     for i in range(1,len(lst)):
@@ -273,7 +286,7 @@ def can_detection(lst):
         if lst[i] == "can":
             can_detect = True
             #toca revisar si esta bien que can este seprado de los parentesis
-            continue
+            return False
         elif "can" in lst[i]:
             can_detect = True
 
@@ -281,6 +294,8 @@ def can_detection(lst):
             lst = new_lst[1:len(new_lst)+1]
             #toca ver como selecciono lo que quiero   
             return verify_simple_command(lst) 
+        elif "not:" == lst[i]:
+            pass
         else:
             return False
 
@@ -373,8 +388,45 @@ def name_fun(tokens,estado,poc_i_p):
         if tokens[2] in defined_names:
             return True
         return False
+def facing_detection(tokens):
+    val = ""
+    cierra = False
 
-    
+    for i in range(1,len(tokens)):
+        if "(" in tokens[i]:
+            lst_devided = tokens[i].split("(")
+            for k in lst_devided:
+                if k == "facing":
+                        pass
+                elif "facing" in k:
+                            return False
+                else:
+                    for m in k:
+                        if m == ")":
+
+                            cierra = True
+                            break
+                        else:
+                            val += m
+                if cierra:
+                    break
+        elif "not:" == tokens[i]:
+            pass
+        else:
+            for j in tokens[i]:
+
+                if j == ")":
+                    cierra = True
+                    break
+                else:
+                    val +=j
+        if cierra:
+            break
+
+    if val in lst_turnto:
+        return True
+    else:
+        return False
                 
             
 print(upload_txt("a.txt"))

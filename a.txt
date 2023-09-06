@@ -15,7 +15,7 @@ walk(2)
 }
 defProc goWest ()
 {
-if can(walk (1,west)) {walk(x)} else{walk(a,)}
+if not: can(walk( x ) ) {walk(x)} else{walk(a,)}
 }
 {
 jump (3,3);
