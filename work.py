@@ -34,6 +34,8 @@ def process_tokens(tokens,estado,proc):
         if "(" in tokens or ")" in tokens:
             return False
         estado = define_procedure(tokens,estado)
+    elif tokens[0] == "Loop":
+        estado = funct_while(tokens, estado)
     elif tokens[0] == "{":
         lista_corchetes.append(1)
     elif tokens[0] == "}":
@@ -430,3 +432,29 @@ def facing_detection(tokens):
                 
             
 print(upload_txt("a.txt"))
+
+def funct_while(tokens, estado):
+    if len(tokens) != 4 or tokens[0] != "Loop:" or tokens[2] != "while":
+        return False
+
+    condition = tokens[3]
+    bracket_open_count = 0
+    block_inside = []
+
+    for line in txt:
+        line = line.strip()
+        if line == "{":
+            bracket_open_count += 1
+        elif line == "}":
+            bracket_open_count -= 1
+
+        block_inside.append(line)
+
+        if bracket_open_count == 0:
+            break
+
+    if process_tokens(condition.split(), estado, proc_in_process):
+        while process_tokens(block_inside, estado, proc_in_process):
+            pass  
+    return estado
+
