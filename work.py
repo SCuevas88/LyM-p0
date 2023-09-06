@@ -43,8 +43,6 @@ def process_tokens(tokens,estado,proc):
             for j in lst_val_created:
                 defined_names.remove(j)
                 lst_val_created = []
-    elif "name" == tokens[0]:
-        return name_fun()
     elif "walk" in tokens[0]:
         estado = two_pos_function(tokens,estado,"walk")
     elif "leap" in tokens[0]:
@@ -79,6 +77,8 @@ def process_tokens(tokens,estado,proc):
     elif "repeat" == tokens[0]:
         estado = funct_repeat(tokens,estado)
     else:
+        if name_fun(tokens,estado,proc_in_process):
+            return True
         estado = validate_command(tokens,estado)
     return estado
 
